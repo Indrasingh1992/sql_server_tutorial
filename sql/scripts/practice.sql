@@ -407,7 +407,39 @@ group by DateName(month, OrderDate)
 
 
 
-/* ==============================================================================
-17:02:00
 
+
+
+/* ==============================================================================
+17:02:00   temporary tables are used to store intermediate results and can be used for complex data transformations or aggregations. They are created using the SELECT INTO statement and are automatically dropped when the session ends.
+
+==============================================================================*/
+
+use salesDB
+SELECT
+    *
+INTO #Orders
+FROM Sales.Orders;
+
+
+select * from #Orders
+  
+/* ==============================================================================
+   Step 2: Clean Data in Temporary Table
+============================================================================== */
+DELETE FROM #Orders
+WHERE OrderStatus = 'Delivered';
+  
+/* ==============================================================================
+   Step 3: Load Cleaned Data into Permanent Table (Sales.OrdersTest)
+============================================================================== */
+SELECT
+    *
+INTO Sales.OrdersTest
+FROM #Orders;
+
+
+
+/* ==============================================================================
+17:40:00   stored procedures are precompiled SQL statements that can be executed multiple times with different parameters. They are created using the CREATE PROCEDURE statement and can accept input parameters, return output parameters, and perform complex operations on the database.
 ==============================================================================*/
