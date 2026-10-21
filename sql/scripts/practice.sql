@@ -443,3 +443,171 @@ FROM #Orders;
 /* ==============================================================================
 17:40:00   stored procedures are precompiled SQL statements that can be executed multiple times with different parameters. They are created using the CREATE PROCEDURE statement and can accept input parameters, return output parameters, and perform complex operations on the database.
 ==============================================================================*/
+use salesDB
+
+EXEC GetCustomerSummary @Country = 'Germany';
+EXEC GetCustomerSummary @Country = 'USA';
+EXEC GetCustomerSummary;
+
+
+
+
+GO
+ALter procedure GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
+BEGIN
+
+-- Declare variable to store the total number of customers and the average score
+DECLARE @TotalCustomers INT, @AvgScore FLOAT;
+
+
+
+	/* --------------------------------------------------------------------------
+	   Prepare & Cleanup Data
+	-------------------------------------------------------------------------- */
+
+
+IF EXISTS (SELECT 1 FROM Sales.Customers WHERE Score IS NULL AND Country = @Country)
+BEGIN 
+    PRINT('Updating NULL Scores to 0');
+    UPDATE Sales.Customers
+    SET Score = 0 
+    where score is null and country = @Country
+END
+
+ELSE 
+BEGIN
+
+    PRINT('No NULL Scores Found for ' + @Country);
+END
+
+
+SELECT 1 FROM Sales.Customers WHERE Score IS NULL AND Country = 'USA'
+
+-- Query 1: Find the Total Nr. of Customers and the Average Score
+SELECT
+    @TotalCustomers = COUNT(*),
+    @AvgScore = AVG(Score)
+FROM Sales.Customers
+WHERE Country = @Country;
+
+PRINT('Total Customers from ' + @Country + ':' + CAST(@TotalCustomers AS NVARCHAR));
+PRINT('Average Score from ' + @Country + ':' + CAST(@AvgScore AS NVARCHAR));
+
+    -- Query 2: Find the Total Nr. of Orders and Total Sales
+
+
+SELECT
+        COUNT(OrderID) AS TotalOrders,
+        SUM(Sales) AS TotalSales
+    FROM Sales.Orders AS o
+    JOIN Sales.Customers AS c
+        ON c.CustomerID = o.CustomerID
+    WHERE c.Country = @Country;
+
+END
+GO
+
+
+EXEC GetCustomerSummary @Country = 'Germany';
+EXEC GetCustomerSummary @Country = 'USA';
+EXEC GetCustomerSummary;
+
+
+select * from Sales.Customers where country = 'USA'
+
+
+/* ==============================================================================
+   Error Handling TRY CATCH in Stored Procedure  
+   18:05:03 
+============================================================================== */
+
+
+GO
+ALter procedure GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
+
+
+BEGIN
+
+BEGIN TRY
+
+-- Declare variable to store the total number of customers and the average score
+DECLARE @TotalCustomers INT, @AvgScore FLOAT;
+
+
+
+	/* --------------------------------------------------------------------------
+	   Prepare & Cleanup Data
+	-------------------------------------------------------------------------- */
+
+
+IF EXISTS (SELECT 1 FROM Sales.Customers WHERE Score IS NULL AND Country = @Country)
+BEGIN 
+    PRINT('Updating NULL Scores to 0');
+    UPDATE Sales.Customers
+    SET Score = 0 
+    where score is null and country = @Country
+END
+
+ELSE 
+BEGIN
+
+    PRINT('No NULL Scores Found for ' + @Country);
+END
+
+
+SELECT 1 FROM Sales.Customers WHERE Score IS NULL AND Country = 'USA'
+
+-- Query 1: Find the Total Nr. of Customers and the Average Score
+SELECT
+    @TotalCustomers = COUNT(*),
+    @AvgScore = AVG(Score)
+FROM Sales.Customers
+WHERE Country = @Country;
+
+PRINT('Total Customers from ' + @Country + ':' + CAST(@TotalCustomers AS NVARCHAR));
+PRINT('Average Score from ' + @Country + ':' + CAST(@AvgScore AS NVARCHAR));
+
+    -- Query 2: Find the Total Nr. of Orders and Total Sales
+
+
+SELECT
+        COUNT(OrderID) AS TotalOrders,
+        SUM(Sales) AS TotalSales,
+        1/0 AS ErrorTrigger -- This line is intentionally added to trigger a divide by zero error for demonstration purposes
+    FROM Sales.Orders AS o
+    JOIN Sales.Customers AS c
+        ON c.CustomerID = o.CustomerID
+    WHERE c.Country = @Country;
+
+END TRY
+
+BEGIN CATCH
+    PRINT('An error occurred.');
+    PRINT('An error occurred: ' + ERROR_MESSAGE());
+    PRINT('Error Number: ' + CAST(ERROR_NUMBER() AS NVARCHAR));
+    PRINT('Error line: ' + CAST(ERROR_LINE() AS NVARCHAR));
+    PRINT('Error Procedure: ' + Error_Procedure());
+
+END CATCH
+
+END
+GO
+
+EXEC GetCustomerSummary @Country = 'Germany';
+EXEC GetCustomerSummary @Country = 'USA';
+EXEC GetCustomerSummary;
+
+
+select * from Sales.Customers where country = 'USA'
+
+
+
+
+/* ==============================================================================
+   SQL Triggers      18:13:00
+-------------------------------------------------------------------------------
+   This script demonstrates the creation of a logging table, a trigger, and
+   an insert operation into the Sales.Employees table that fires the trigger.
+   The trigger logs details of newly added employees into the Sales.EmployeeLogs table.
+=================================================================================
+*/

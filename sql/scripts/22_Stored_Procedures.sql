@@ -18,8 +18,10 @@
 /* ==============================================================================
    Basic Stored Procedure
 ============================================================================== */
+use Salesdb;
 
 -- Define the Stored Procedure
+GO
 CREATE PROCEDURE GetCustomerSummary AS
 BEGIN
     SELECT
@@ -38,7 +40,8 @@ EXEC GetCustomerSummary;
 ============================================================================== */
 
 -- Edit the Stored Procedure
-ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
+GO
+ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) AS
 BEGIN
     -- Reports: Summary from Customers and Orders
     SELECT
@@ -57,8 +60,9 @@ EXEC GetCustomerSummary;
 /* ==============================================================================
    Multiple Queries in Stored Procedure
 ============================================================================== */
-
+use Salesdb;
 -- Edit the Stored Procedure
+GO
 ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
 BEGIN
     -- Query 1: Find the Total Nr. of Customers and the Average Score
@@ -89,6 +93,8 @@ EXEC GetCustomerSummary;
 ============================================================================== */
 
 -- Edit the Stored Procedure
+
+GO
 ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
 BEGIN
     -- Declare Variables
@@ -123,7 +129,7 @@ EXEC GetCustomerSummary;
 /* ==============================================================================
    Control Flow IFELSE in Stored Procedure
 ============================================================================== */
-
+GO
 ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
 BEGIN
 	-- Declare Variables
@@ -177,6 +183,8 @@ EXEC GetCustomerSummary;
    Error Handling TRY CATCH in Stored Procedure
 ============================================================================== */
 
+
+GO
 ALTER PROCEDURE GetCustomerSummary @Country NVARCHAR(50) = 'USA' AS
     
 BEGIN
